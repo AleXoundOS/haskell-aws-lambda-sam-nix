@@ -4,22 +4,23 @@ module Main where
 import Aws.Lambda
 import Data.Text
 import qualified Data.Text as Text
-import GHC.Generics
 import Data.Aeson
 import qualified Data.Aeson.KeyMap as KeyMap
-import Data.Maybe
+import Data.IORef
+import Data.Time.Clock (getCurrentTime, UTCTime)
 
 main :: IO ()
 main =
-  runLambdaHaskellRuntime defaultDispatcherOptions (pure ()) id $ do
+  runLambdaHaskellRuntime defaultDispatcherOptions getCurrentTime id $ do
     addStandaloneLambdaHandler "standaloneHandler" standaloneHandler
 
-standaloneHandler :: Value -> Context () -> IO (Either String Text)
-standaloneHandler req _context = do
+standaloneHandler :: Value -> Context UTCTime -> IO (Either String Text)
+standaloneHandler req awsContext = do
+  context <- readIORef $ customContext awsContext
   print req -- this gets printed in CloudWatch logs
   pure $ case parseParam req of
     Nothing -> error "no \"param\" found" -- (Left values are not printed)
-    Just paramTxt -> Right paramTxt
+    Just paramTxt -> Right (Text.pack (show context) <> "\n" <> paramTxt)
 
 parseParam :: Value -> Maybe Text
 parseParam (Object o) =

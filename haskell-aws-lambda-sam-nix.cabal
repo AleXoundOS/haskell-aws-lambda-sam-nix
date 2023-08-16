@@ -23,6 +23,7 @@ common deps
                      , http-types
                      , lens
                      , text
+                     , time
 
 executable haskell-aws-lambda-sam-nix
   import: deps

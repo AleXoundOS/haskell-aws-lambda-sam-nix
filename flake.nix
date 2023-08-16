@@ -21,9 +21,12 @@
                   hlint = { };
                   haskell-language-server = { };
                 };
+                # when LESS is set, aws CLI is not able to produce colored text
+                shell.shellHook = "unset LESS";
                 # Non-Haskell shell tools go here
                 shell.buildInputs = with pkgs; [
-                  nixpkgs-fmt
+                  # AWS CLI to upload zip Lambda bundle and manage AWS services
+                  awscli2
                 ];
               };
           })

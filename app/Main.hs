@@ -19,16 +19,26 @@ import Data.IORef
 import Data.Time.Clock (getCurrentTime, UTCTime)
 import System.IO (stdout)
 
+-- | Toggle debug logging here.
+useDebugLogging :: Bool
+useDebugLogging = False
+
 initializeContext :: IO (UTCTime, A.Env)
 initializeContext = do
-  -- note that CloudWatch logging in AWS expensive and takes lots of Lambda time
-  logger <- A.newLogger A.Debug stdout
-  env <- setLoggerInAwsEnv logger <$> A.newEnv A.discover
+  env <- initEnv
+
   curTime <- getCurrentTime
   pure (curTime, env)
   where
     setLoggerInAwsEnv :: A.Logger -> A.Env -> A.Env
     setLoggerInAwsEnv logger env = env {A.logger = logger}
+    initEnv =
+      if useDebugLogging then do
+        logger <- A.newLogger A.Debug stdout
+        setLoggerInAwsEnv logger <$> A.newEnv A.discover
+      else
+        A.newEnv A.discover
+
 
 main :: IO ()
 main = do
@@ -38,9 +48,7 @@ main = do
 standaloneHandler :: Value -> Aws.Context (UTCTime, A.Env)
                   -> IO (Either String Text)
 standaloneHandler req awsContext = do
-  print req -- this is printed in CloudWatch logs at the cost of time
   (initTime, env) <- readIORef $ customContext awsContext
-  putStrLn $ "running in region: " ++ show (A.region env)
   tables <- getTables env
 
   pure $ case parseParam req of

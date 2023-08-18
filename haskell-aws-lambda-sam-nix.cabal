@@ -20,8 +20,10 @@ common deps
   build-depends:       base ^>=4.16.4.0
                      , aeson >2
                      , aws-lambda-haskell-runtime
+                     , amazonka
+                     , amazonka-dynamodb
+                     , conduit
                      , http-types
-                     , lens
                      , text
                      , time
 

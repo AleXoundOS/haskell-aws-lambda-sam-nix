@@ -27,14 +27,17 @@ When inside the `$ nix develop` you can use typical `cabal` commands like `cabal
 ## prepare your AWS account for Lambda deployment
 
 1. **create new AWS Access key**
-   Log into your AWS account in web browser. Click on your account name in the top right corner and then click on `Security credentials` -- browser should navigate to IAM page. Find `Access keys` paragraph and click on `Create access key` button. Then copy `Access key ID` and `Secret access key` in some secure place -- they will be needed another step.
 
-2. **create AWS Lambda role**
-   On the same IAM page navigate to `Roles` section (from the menu on the left). Click on `Create role` button. Choose `Trusted entity type` to be `AWS service` and `Use case` to be `Lambda`. Click on the `Next` button. Select `AWSLambdaBasicExecutionRole` and click on the `Next` button. Enter `lambda-role` in the `Role name` field. Click on the `Create role` button. More instructions are in [AWS Developer Guide](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-walkthrough.html#runtimes-walkthrough-prereqs). Now on the `Roles` page click on `lambda-role` and you will text under `ARN`, which will be needed later when managing functions with AWS CLI.
+    Log into your AWS account in web browser. Click on your account name in the top right corner and then click on `Security credentials` -- browser should navigate to IAM page. Find `Access keys` paragraph and click on `Create access key` button. Then copy `Access key ID` and `Secret access key` in some secure place -- they will be needed another step.
+
+3. **create AWS Lambda role**
+
+    On the same IAM page navigate to `Roles` section (from the menu on the left). Click on `Create role` button. Choose `Trusted entity type` to be `AWS service` and `Use case` to be `Lambda`. Click on the `Next` button. Select `AWSLambdaBasicExecutionRole` and click on the `Next` button. Enter `lambda-role` in the `Role name` field. Click on the `Create role` button. More instructions are in [AWS Developer Guide](https://docs.aws.amazon.com/lambda/latest/dg/runtimes-walkthrough.html#runtimes-walkthrough-prereqs). Now on the `Roles` page click on `lambda-role` and you will text under `ARN`, which will be needed later when managing functions with AWS CLI.
    _[It seems to be possible to configure roles using AWS CLI](https://github.com/jesuspc/aws-lambda-haskell#deployment), but I haven't tested this._
 
-3. **configure AWS CLI**
-   Run `$ aws configure` - it will ask you to enter `Access key ID` and `Secret access key`. Also it asks for [region](https://docs.aws.amazon.com/quicksight/latest/user/regions.html) and [AWS CLI output format](https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-output-format.html) (I recommend `table`). As a result it creates configuration files in `$HOME/.aws/`.
+5. **configure AWS CLI**
+
+    Run `$ aws configure` - it will ask you to enter `Access key ID` and `Secret access key`. Also it asks for [region](https://docs.aws.amazon.com/quicksight/latest/user/regions.html) and [AWS CLI output format](https://docs.aws.amazon.com/cli/latest/userguide/cli-usage-output-format.html) (I recommend `table`). As a result it creates configuration files in `$HOME/.aws/`.
 
 ## build the zip bundle for AWS Lambda
 
@@ -45,16 +48,22 @@ As a result, symlink `./result` will be created to a folder with zip archive, co
 ## create AWS Lambda function with Function URL
 
 1. **create Lambda function**
-`$ aws lambda create-function --function-name test-hs-runtime-standalone --zip-file fileb://result/*.zip --handler standaloneHandler --runtime provided --role arn:aws:iam::123456789012:role/lambda-role` (replace `arn:aws:iam::123456789012:role/lambda-role` with your ARN obtained earlier)
-Note that handler must match the one, specified in haskell code as the first argument to `addStandaloneLambdaHandler`.
 
-2. **create Function URL**
-`$ aws lambda create-function-url-config --function-name test-hs-runtime-standalone --auth-type NONE`
-Save the returned URL for further `curl` requests.
+    `$ aws lambda create-function --function-name test-hs-runtime-standalone --zip-file fileb://result/*.zip --handler standaloneHandler --runtime provided --role arn:aws:iam::123456789012:role/lambda-role` (replace `arn:aws:iam::123456789012:role/lambda-role` with your ARN obtained earlier)
 
-3. **add permission to invoke Lambda function by HTTP request at specific URL**
-`$ aws lambda add-permission --function-name test-hs-runtime-standalone --statement-id allow-invokeFunctionUrl-publicly --action lambda:InvokeFunctionUrl --principal "*" --function-url-auth-type NONE`
-Note that everybody will be able to access this URL, invoking your function, because none Auth type is specified here.
+    Note that handler must match the one, specified in haskell code as the first argument to `addStandaloneLambdaHandler`.
+
+3. **create Function URL**
+
+    `$ aws lambda create-function-url-config --function-name test-hs-runtime-standalone --auth-type NONE`
+
+    Save the returned URL for further `curl` requests.
+
+4. **add permission to invoke Lambda function by HTTP request at specific URL**
+
+    `$ aws lambda add-permission --function-name test-hs-runtime-standalone --statement-id allow-invokeFunctionUrl-publicly --action lambda:InvokeFunctionUrl --principal "*" --function-url-auth-type NONE`
+
+    Note that everybody will be able to access this URL, invoking your function, because none Auth type is specified here.
 
 ## uploading updated Lambda function to AWS
 

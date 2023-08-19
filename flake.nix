@@ -37,6 +37,11 @@
       flake // {
         # Built by `nix build .`
         defaultPackage = flake.packages."haskell-aws-lambda-sam-nix:exe:haskell-aws-lambda-sam-nix";
-        aws-lambda = import ./make-aws-lambda-zip.nix { inherit pkgs flake; };
+        aws-lambda =
+          import ./make-aws-lambda-zip.nix { inherit pkgs flake; }
+            "haskell-aws-lambda-sam-nix";
+        aws-lambda-on-s3-upload =
+          import ./make-aws-lambda-zip.nix { inherit pkgs flake; }
+            "aws-lambda-on-s3-upload";
       });
 }

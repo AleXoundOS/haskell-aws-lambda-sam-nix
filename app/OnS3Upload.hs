@@ -1,6 +1,6 @@
 {-# LANGUAGE OverloadedStrings #-}
 
-module Main where
+module OnS3Upload where
 
 import Aws.Lambda as Aws
 import qualified Amazonka as A

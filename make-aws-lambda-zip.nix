@@ -1,7 +1,7 @@
-{ pkgs, flake }:
+{ pkgs, flake }: executable:
 
 let
-  buildLambda = cabalProject: executable:
+  buildLambda = cabalProject:
     let
       exeComponent = flake.packages."${cabalProject}:exe:${executable}";
     in
@@ -29,5 +29,5 @@ let
         zip -qr $out/${executable}.zip lib bootstrap
       '';
 in
-  buildLambda "haskell-aws-lambda-sam-nix" "haskell-aws-lambda-sam-nix"
+  buildLambda "haskell-aws-lambda-sam-nix"
 

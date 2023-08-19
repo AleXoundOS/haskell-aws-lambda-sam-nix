@@ -53,6 +53,32 @@ executable haskell-aws-lambda-sam-nix
   hs-source-dirs:      app
   default-language:    Haskell2010
 
+executable aws-lambda-on-s3-upload
+  import: deps
+  main-is:             OnS3Upload.hs
+  -- other-modules:
+  -- other-extensions:
+  build-depends:       base ^>=4.16.4.0
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Widentities
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wtabs
+    -Wmissing-local-signatures
+    -fhelpful-errors
+    -fprint-expanded-synonyms
+    -fwarn-unused-do-bind
+    -Werror=incomplete-patterns
+    -O2
+    -static
+    -threaded
+  hs-source-dirs:      app
+  default-language:    Haskell2010
+
 test-suite haskell-aws-lambda-sam-nix-test
   default-language:    Haskell2010
   type:                exitcode-stdio-1.0

@@ -43,5 +43,8 @@
         aws-lambda-on-s3-upload =
           import ./make-aws-lambda-zip.nix { inherit pkgs flake; }
             "aws-lambda-on-s3-upload";
+        aws-lambda-on-mqtt-msg =
+          import ./make-aws-lambda-zip.nix { inherit pkgs flake; }
+            "aws-lambda-on-mqtt-msg";
       });
 }

@@ -21,61 +21,64 @@ common deps
                      , aeson >2
                      , aws-lambda-haskell-runtime
                      , amazonka
+                     , amazonka-core
                      , amazonka-dynamodb
                      , conduit
                      , http-types
                      , text
                      , time
 
+common ghc_options
+  ghc-options:
+    -Wall
+    -Wcompat
+    -Widentities
+    -Wincomplete-record-updates
+    -Wincomplete-uni-patterns
+    -Wredundant-constraints
+    -Wpartial-fields
+    -Wtabs
+    -Wmissing-local-signatures
+    -fhelpful-errors
+    -fprint-expanded-synonyms
+    -fwarn-unused-do-bind
+    -Werror=incomplete-patterns
+    -O2
+    -static
+    -threaded
+
 executable haskell-aws-lambda-sam-nix
-  import: deps
+  import: deps, ghc_options
   main-is:             Main.hs
   -- other-modules:
   -- other-extensions:
   build-depends:       base ^>=4.16.4.0
-  ghc-options:
-    -Wall
-    -Wcompat
-    -Widentities
-    -Wincomplete-record-updates
-    -Wincomplete-uni-patterns
-    -Wredundant-constraints
-    -Wpartial-fields
-    -Wtabs
-    -Wmissing-local-signatures
-    -fhelpful-errors
-    -fprint-expanded-synonyms
-    -fwarn-unused-do-bind
-    -Werror=incomplete-patterns
-    -O2
-    -static
-    -threaded
   hs-source-dirs:      app
   default-language:    Haskell2010
 
 executable aws-lambda-on-s3-upload
-  import: deps
+  import: deps, ghc_options
   main-is:             OnS3Upload.hs
   -- other-modules:
   -- other-extensions:
   build-depends:       base ^>=4.16.4.0
-  ghc-options:
-    -Wall
-    -Wcompat
-    -Widentities
-    -Wincomplete-record-updates
-    -Wincomplete-uni-patterns
-    -Wredundant-constraints
-    -Wpartial-fields
-    -Wtabs
-    -Wmissing-local-signatures
-    -fhelpful-errors
-    -fprint-expanded-synonyms
-    -fwarn-unused-do-bind
-    -Werror=incomplete-patterns
-    -O2
-    -static
-    -threaded
+  hs-source-dirs:      app
+  default-language:    Haskell2010
+
+executable aws-lambda-on-mqtt-msg
+  import: ghc_options
+  build-depends:       base ^>=4.16.4.0
+                     , aeson >2
+                     , aws-lambda-haskell-runtime
+                     , amazonka
+                     , amazonka-dynamodb
+                     , text
+                     , time
+                     , unordered-containers
+  main-is:             OnMqttMsg.hs
+  -- other-modules:
+  -- other-extensions:
+  build-depends:       base ^>=4.16.4.0
   hs-source-dirs:      app
   default-language:    Haskell2010
 

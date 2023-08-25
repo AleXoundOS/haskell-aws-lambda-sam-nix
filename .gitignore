@@ -24,3 +24,4 @@ cabal.project.local~
 .aws-sam/
 HelloWorldFunction/
 /result
+/aws-lambda-invoke-output.json

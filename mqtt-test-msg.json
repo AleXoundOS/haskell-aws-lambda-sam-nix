@@ -1,0 +1,9 @@
+{
+    "uuid": "abcd1234",
+    "nested": {
+        "data": 5678
+    },
+    "some_other": {
+        "unneeded": "stuff"
+    }
+}

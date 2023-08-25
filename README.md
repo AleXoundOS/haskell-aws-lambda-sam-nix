@@ -49,7 +49,7 @@ As a result, symlink `./result` will be created to a folder with zip archive, co
 
 1. **create Lambda function**
 
-    `$ aws lambda create-function --function-name test-hs-runtime-standalone --zip-file fileb://result/*.zip --handler standaloneHandler --runtime provided --role arn:aws:iam::123456789012:role/lambda-role` (replace `arn:aws:iam::123456789012:role/lambda-role` with your ARN obtained earlier)
+    `$ aws lambda create-function --function-name test-hs-runtime-standalone --zip-file fileb://$(echo result/*.zip) --handler standaloneHandler --runtime provided --role arn:aws:iam::123456789012:role/lambda-role` (replace `arn:aws:iam::123456789012:role/lambda-role` with your ARN obtained earlier)
 
     Note that handler must match the one, specified in haskell code as the first argument to `addStandaloneLambdaHandler`.
 
@@ -67,7 +67,7 @@ As a result, symlink `./result` will be created to a folder with zip archive, co
 
 ## uploading updated Lambda function to AWS
 
-4. `$ nix build .#aws-lambda.x86_64-linux && aws lambda update-function-code --function-name test-hs-runtime-standalone --zip-file fileb://result/*.zip`
+4. `$ nix build .#aws-lambda.x86_64-linux && aws lambda update-function-code --function-name test-hs-runtime-standalone --zip-file fileb://$(echo result/*.zip)`
 
 # Testing
 

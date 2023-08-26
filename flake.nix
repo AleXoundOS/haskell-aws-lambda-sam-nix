@@ -46,5 +46,8 @@
         aws-lambda-on-mqtt-msg =
           import ./make-aws-lambda-zip.nix { inherit pkgs flake; }
             "aws-lambda-on-mqtt-msg";
+        aws-lambda-on-http-req =
+          import ./make-aws-lambda-zip.nix { inherit pkgs flake; }
+            "aws-lambda-on-http-req";
       });
 }

@@ -59,7 +59,8 @@ executable haskell-aws-lambda-sam-nix
 executable aws-lambda-on-s3-upload
   import: deps, ghc_options
   main-is:             OnS3Upload.hs
-  build-depends:       base ^>=4.16.4.0
+  build-depends:       vector
+                     , unordered-containers
   hs-source-dirs:      app
   default-language:    Haskell2010
 

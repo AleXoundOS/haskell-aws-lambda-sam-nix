@@ -78,3 +78,8 @@ Just use your Function URL obtained earlier. Example:
 The Lambda function should respond with date it was loaded on AWS and the value of `param` HTTP query parameter. The date should stay the same among multiple invocations, clearly demonstrating that AWS does not load/unload the binary on each invocation, but keeps it running and waiting for the next one.
 
 If `param` HTTP query parameter is missing, the function should crash with an error message in stdout, captured by AWS and displayed in [AWS CloudWatch](https://eu-north-1.console.aws.amazon.com/cloudwatch/home?region=eu-north-1#logsV2:live-tail) for the chosen Lambda function.
+
+# Testing of a Lambda function without HTTP API
+
+`$ aws lambda invoke --function-name test-on-mqtt --payload $(echo '{ "keyA": "value1" }' | base64) aws-lambda-invoke-output.json && cat aws-lambda-invoke-output.json`
+`$ aws lambda invoke --function-name test-on-mqtt --payload fileb://mqtt-test-msg.json aws-lambda-invoke-output.json && cat aws-lambda-invoke-output.json`

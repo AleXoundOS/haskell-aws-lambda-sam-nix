@@ -23,13 +23,13 @@ import Data.HashMap.Strict (HashMap)
 type TableName = Text
 type Item = HashMap Text AttributeValue
 
-type UUID = Text
+type ID = Text
 
-newtype QueryParams = QueryParams UUID
+newtype QueryParams = QueryParams ID
   deriving Show
 
 instance FromJSON QueryParams where
-  parseJSON (Object o) = QueryParams <$> o .: "uuid"
+  parseJSON (Object o) = QueryParams <$> o .: "id"
   parseJSON _ = mempty
 
 -- | Toggle debug logging here.
@@ -61,18 +61,18 @@ standaloneHandler req awsContext = do
 
   case parseQueryParams req of
     Error errStr -> pure $ Left errStr
-    Success (QueryParams uuid) -> do
-      items <- getItemsByUUID env "test-table" uuid
-      pure $ Right (text uuid items)
+    Success (QueryParams id) -> do
+      items <- getItemsByID env "test-table" id
+      pure $ Right (text id items)
   where
-    text :: UUID -> [Item] -> Text
-    text uuid items = ""
-      <> "uuid value: " <> uuid <> "\n"
+    text :: ID -> [Item] -> Text
+    text id items = ""
+      <> "id value: " <> id <> "\n"
       <> "existing items: " <> T.pack (show items)
 
--- | aws dynamodb query --table-name test-table --key-condition-expression "#u = :u" --expression-attribute-names '{"#u":"uuid"}' --expression-attribute-values '{":u":{"S":"abcd1234"}}'
-getItemsByUUID :: A.Env -> TableName -> UUID -> IO [Item]
-getItemsByUUID env tableName uuid = do
+-- | aws dynamodb query --table-name test-table --key-condition-expression "#u = :u" --expression-attribute-names '{"#u":"id"}' --expression-attribute-values '{":u":{"S":"abcd1234"}}'
+getItemsByID :: A.Env -> TableName -> ID -> IO [Item]
+getItemsByID env tableName id = do
   A.runResourceT $ do
     runConduit $
       A.paginate env query
@@ -82,9 +82,9 @@ getItemsByUUID env tableName uuid = do
   where
     query =
       (D.newQuery tableName)
-      { D.expressionAttributeNames = Just (HM.fromList [ ("#u", "uuid") ])
-      , D.keyConditionExpression = Just "#u = :u"
-      , D.expressionAttributeValues = Just (HM.fromList [ (":u", DA.S uuid) ])
+      { D.expressionAttributeNames = Just (HM.fromList [ ("#i", "id") ])
+      , D.expressionAttributeValues = Just (HM.fromList [ (":i", DA.S id) ])
+      , D.keyConditionExpression = Just "#i = :i"
       }
 
 parseQueryParams :: Value -> Result QueryParams

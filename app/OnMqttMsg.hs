@@ -19,27 +19,31 @@ import qualified Data.HashMap.Strict as HM
 
 type TableName = Text
 
-type UUID = Text
+type ID = Text
 
 newtype Data = Data Word64
   deriving Show
 
 type SortKey = Word64
 
-data Msg = Msg UUID Data
+data Msg = Msg ID Data
   deriving Show
 
 instance FromJSON Msg where
-  parseJSON (Object v) = Msg <$> v .: "uuid" <*> v .: "nested"
+  parseJSON (Object v) = Msg <$> v .: "id" <*> v .: "nested"
   parseJSON _ = mempty
 
 instance FromJSON Data where
-  parseJSON (Object v) = Data <$> v.: "data"
+  parseJSON (Object v) = Data <$> v.: "value"
   parseJSON _ = mempty
 
 -- | Toggle debug logging here.
 useDebugLogging :: Bool
 useDebugLogging = False
+
+-- | Set table name here, where to update/put items.
+theOnlyTableName :: Text
+theOnlyTableName = "test-table"
 
 initializeContext :: IO A.Env
 initializeContext = initEnv
@@ -66,7 +70,7 @@ standaloneHandler req awsContext = do
   case fromJSON req :: Result Msg of
     Error str -> pure $ Left str
     Success msg -> do
-      putItemResp <- doPutItem env "test-table" msg
+      putItemResp <- doPutItem env theOnlyTableName msg
       pure $ Right $ T.pack (show req) <> "\n"
         <> T.pack (show msg) <> "\n" <> T.pack (show putItemResp)
 
@@ -74,12 +78,12 @@ genSortKeyValue :: IO Word64
 genSortKeyValue = round . (* 10^(9 :: Word64)) <$> getPOSIXTime
 
 doPutItem :: A.Env -> TableName -> Msg -> IO D.PutItemResponse
-doPutItem env tableName (Msg uuid (Data number)) = do
+doPutItem env tableName (Msg id (Data number)) = do
   sortKey <- T.pack . show <$> genSortKeyValue
   let itemMap = HM.fromList
-                [ ("uuid", DA.S uuid)
+                [ ("id", DA.S id)
                 , ("timestamp", DA.N sortKey)
-                , ("data", DA.N $ T.pack $ show number)
+                , ("value", DA.N $ T.pack $ show number)
                 ]
   A.runResourceT
     $ A.send env
